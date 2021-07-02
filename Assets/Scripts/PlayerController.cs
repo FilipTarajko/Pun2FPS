@@ -13,6 +13,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float jumpForce;
     [SerializeField] float smoothTime;
 
+    [SerializeField] Item[] items;
+
+    int itemIndex;
+    int previousItemIndex = -1;
+
     float verticalLookRotation;
     bool grounded;
     Vector3 smoothMoveVelocity;
@@ -23,14 +28,15 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        if(!PV.IsMine)
+        if(PV.IsMine)
         {
-            Destroy(GetComponentInChildren<Camera>().gameObject);
-            Destroy(rb);
+            transform.position += new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), Random.Range(-2f, 2f));
+            EquipItem(0);
         }
         else
         {
-            transform.position += new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), Random.Range(-2f, 2f));
+            Destroy(GetComponentInChildren<Camera>().gameObject);
+            Destroy(rb);
         }
     }
 
@@ -47,6 +53,38 @@ public class PlayerController : MonoBehaviour
             HandleLooking();
             HandleMoving();
             HandleJumping();
+        }
+
+        for(int i=0; i<items.Length; i++)
+        {
+            if(Input.GetKeyDown((i+1).ToString()))
+            {
+                EquipItem(i);
+                break;
+            }
+        }
+
+        if(Input.GetAxisRaw("Mouse ScrollWheel")>0f)
+        {
+            if(itemIndex >= items.Length - 1)
+            {
+                EquipItem(0);
+            }
+            else
+            {
+                EquipItem(itemIndex + 1);
+            }    
+        }
+        else if(Input.GetAxisRaw("Mouse ScrollWheel")<0f)
+        {
+            if(itemIndex<=0)
+            {
+                EquipItem(items.Length - 1);
+            }
+            else
+            {
+                EquipItem(itemIndex - 1);
+            }
         }
     }
 
@@ -72,6 +110,22 @@ public class PlayerController : MonoBehaviour
         {
             rb.AddForce(transform.up * jumpForce);
         }
+    }
+
+    void EquipItem(int _index)
+    {
+        if(_index == previousItemIndex)
+        {
+            return;
+        }
+
+        itemIndex = _index;
+        items[itemIndex].itemGameObject.SetActive(true);
+        if (previousItemIndex != -1)
+        {
+            items[previousItemIndex].itemGameObject.SetActive(false);
+        }
+        previousItemIndex = itemIndex;
     }
 
     public void SetGroundedState(bool _grounded)
