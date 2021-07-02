@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class PlayerController : MonoBehaviourPunCallbacks
+public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 {
     [SerializeField] GameObject cameraHolder;
 
@@ -27,6 +27,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     Rigidbody rb;
     PhotonView PV;
+    PlayerManager playerManager;
+
+    const float maxHealth = 100f;
+    float currentHealth = maxHealth;
 
     private void Start()
     {
@@ -46,18 +50,22 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
+
+        playerManager = PhotonView.Find((int)PV.InstantiationData[0]).GetComponent<PlayerManager>();
     }
 
     private void Update()
     {
-        if (PV.IsMine)
+        if (!PV.IsMine)
         {
-            HandleLooking();
-            HandleMoving();
-            HandleJumping();
+            return;
         }
 
-        for(int i=0; i<items.Length; i++)
+        HandleLooking();
+        HandleMoving();
+        HandleJumping();
+
+        for (int i=0; i<items.Length; i++)
         {
             if(Input.GetKeyDown((i+1).ToString()))
             {
@@ -87,6 +95,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
             {
                 EquipItem(itemIndex - 1);
             }
+        }
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            items[itemIndex].Use();
         }
     }
 
@@ -152,9 +165,34 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private void FixedUpdate()
     {
-       if(PV.IsMine)
+        if (PV.IsMine)
         {
             rb.MovePosition(rb.position + transform.TransformDirection(moveAmount) * Time.fixedDeltaTime);
         }
     }
+
+    public void TakeDamage(float damage)
+    {
+        PV.RPC("RPC_TakeDamage", RpcTarget.All, damage);
+    }
+
+    [PunRPC]
+    void RPC_TakeDamage(float damage)
+    {
+        if(!PV.IsMine)
+        {
+            return;
+        }
+        currentHealth -= damage;
+        if(currentHealth<=0)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        playerManager.Die();
+    }
+
 }
