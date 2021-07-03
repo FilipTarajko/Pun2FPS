@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
     [SerializeField] Item[] items;
 
+    bool isRotationAllowed = true;
+
     public int colorIndex = 0;
     int itemIndex;
     int previousItemIndex = -1;
@@ -41,8 +43,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
     private void Start()
     {
-        if(PV.IsMine)
+        if (PV.IsMine)
         {
+            Cursor.lockState = CursorLockMode.Locked;
             transform.position += new Vector3(Random.Range(-0.2f, 0.2f), 0, Random.Range(-0.2f, 0.2f));
             EquipItem(0);
         }
@@ -122,12 +125,28 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
     void HandleLooking()
     {
-        transform.Rotate(Vector3.up * Input.GetAxisRaw("Mouse X") * mouseSensitivity);
+        if (Input.GetKeyDown("p"))
+        {
+            if (Cursor.lockState != CursorLockMode.Locked)
+            {
+                isRotationAllowed = true;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            else
+            {
+                isRotationAllowed = false;
+                Cursor.lockState = CursorLockMode.None;
+            }
+        }
 
-        verticalLookRotation += Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
-        verticalLookRotation = Mathf.Clamp(verticalLookRotation, -90f, 90f);
+        if(isRotationAllowed)
+        {
+            transform.Rotate(Vector3.up * Input.GetAxisRaw("Mouse X") * mouseSensitivity);
+            verticalLookRotation += Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
+            verticalLookRotation = Mathf.Clamp(verticalLookRotation, -90f, 90f);
+            cameraHolder.transform.localEulerAngles = Vector3.left * verticalLookRotation;
+        }
 
-        cameraHolder.transform.localEulerAngles = Vector3.left * verticalLookRotation;
     }
     
     void HandleMoving()

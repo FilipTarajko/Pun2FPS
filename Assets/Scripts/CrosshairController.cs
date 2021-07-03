@@ -1,63 +1,76 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CrosshairController : MonoBehaviour
 {
     [SerializeField] GameObject crosshairParent;
     [SerializeField] GameObject[] crosshairs;
-    [Header("Crosshair size values")]
-    [SerializeField]
-    float defaultCrosshairScale = 1f;
-    [SerializeField]
-    float crosshairScaleMin = 0.5f;
-    [SerializeField]
-    float crosshairScaleMax = 2f;
-    [SerializeField]
-    float crosshairScaleChangeMultiplier = 0.85f;
-    [Header("Current crosshair size")]
-    [SerializeField]
-    float crosshairScale;
-    [Header("Current crosshair style")]
-    int currentCrosshairIndex = 0;
+
+    [SerializeField] Slider scaleSlider;
 
     private void Start()
     {
-        crosshairScale = defaultCrosshairScale;
-        for(int i=1; i<crosshairs.Length;i++)
+        DisableCrosshairs();
+        CreateMissingPrefs();
+        EnableFromPrefs();
+        ScaleFromPrefs();
+        if (scaleSlider)
+        {
+            scaleSlider.value =(PlayerPrefs.GetFloat("crosshairScale") - 0.4f)/4.6f;
+        }
+    }
+
+    void CreateMissingPrefs()
+    {
+        if (!PlayerPrefs.HasKey("crosshairStyle"))
+        {
+            PlayerPrefs.SetInt("crosshairStyle", 0);
+        }
+        if (!PlayerPrefs.HasKey("crosshairScale"))
+        {
+            PlayerPrefs.SetFloat("crosshairScale", 1);
+        }
+    }
+
+    void DisableCrosshairs()
+    {
+        for (int i = 0; i < crosshairs.Length; i++)
         {
             crosshairs[i].SetActive(false);
         }
     }
 
-    private void SetCrosshairSize()
+    void EnableFromPrefs()
     {
-        crosshairScale = Mathf.Clamp(crosshairScale, crosshairScaleMin, crosshairScaleMax);
-        crosshairParent.transform.localScale = new Vector3(crosshairScale, crosshairScale, crosshairScale);
+        crosshairs[PlayerPrefs.GetInt("crosshairStyle")].SetActive(true);
     }
 
-    void Update()
+    void ScaleFromPrefs()
     {
-        if (Input.GetKeyDown("9"))
-        {
-            crosshairs[currentCrosshairIndex % crosshairs.Length].SetActive(false);
-            currentCrosshairIndex++;
-            crosshairs[currentCrosshairIndex % crosshairs.Length].SetActive(true);
-        }
-        if (Input.GetKeyDown("0"))
-        {
-            crosshairScale = 1f;
-            SetCrosshairSize();
-        }
-        if (Input.GetKeyDown("-"))
-        {
-            crosshairScale*= crosshairScaleChangeMultiplier;
-            SetCrosshairSize();
-        }
-        if (Input.GetKeyDown("="))
-        {
-            crosshairScale /= crosshairScaleChangeMultiplier;
-            SetCrosshairSize();
-        }
+        crosshairParent.transform.localScale = new Vector3(1, 1, 1) * PlayerPrefs.GetFloat("crosshairScale");
+    }
+
+    public void PreviousStyle()
+    {
+        DisableCrosshairs();
+        PlayerPrefs.SetInt("crosshairStyle", PlayerPrefs.GetInt("crosshairStyle") - 1 + (PlayerPrefs.GetInt("crosshairStyle") > 0 ? 0 : crosshairs.Length));
+        EnableFromPrefs();
+    }
+
+    public void NextStyle()
+    {
+        DisableCrosshairs();
+        PlayerPrefs.SetInt("crosshairStyle", PlayerPrefs.GetInt("crosshairStyle") + 1 - ((PlayerPrefs.GetInt("crosshairStyle") + 1) < crosshairs.Length ? 0 : crosshairs.Length));
+        EnableFromPrefs();
+    }
+
+    public void SetScale()
+    {
+        Debug.Log("changing scale!");
+        float scale = 0.4f + scaleSlider.value * 4.6f;
+        PlayerPrefs.SetFloat("crosshairScale", scale);
+        ScaleFromPrefs();
     }
 }

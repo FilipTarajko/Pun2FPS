@@ -27,13 +27,13 @@ public class Launcher : MonoBehaviourPunCallbacks
     void Start()
     {
         MenuManager.Instance.OpenMenu("loading");
-        Debug.Log("Conntecting to master");
+        Debug.Log("Connecting to master");
         PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Conntected to master");
+        Debug.Log("Connected to master");
         PhotonNetwork.JoinLobby();
         PhotonNetwork.AutomaticallySyncScene = true;
     }
