@@ -19,8 +19,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     [SerializeField] float jumpForce;
     [SerializeField] float smoothTime;
 
+    [SerializeField] Material[] colors;
+
     [SerializeField] Item[] items;
 
+    public int colorIndex = 0;
     int itemIndex;
     int previousItemIndex = -1;
 
@@ -70,7 +73,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         HandleMoving();
         HandleJumping();
         HandleItems();
-
+        HandleColors();
         if(transform.position.y < -10f)
         {
             Die();
@@ -163,12 +166,44 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
             PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
         }
     }
+    void HandleColors()
+    {
+        if (Input.GetKeyDown("c"))
+        {
+            if(PV.IsMine)
+            {
+                colorIndex = (colorIndex + 1) % colors.Length;
+                SetColorSelf(colorIndex);
+            }
+        }
+    }
+
+    public void SetColorSelf(int _index)
+    {
+        GetComponent<MeshRenderer>().material = colors[_index];
+        Hashtable hash = new Hashtable();
+        hash.Add("colorIndex", colorIndex);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+        SetColor(colorIndex);
+    }
+
+    public void SetColor(int _index)
+    {
+        GetComponent<MeshRenderer>().material = colors[_index];
+    }
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
-        if(!PV.IsMine && targetPlayer == PV.Owner)
+        if(!PV.IsMine && targetPlayer == PV.Owner )
         {
-            EquipItem((int)changedProps["itemIndex"]);
+            if (changedProps.ContainsKey("itemIndex"))
+            {
+                EquipItem((int)changedProps["itemIndex"]);
+            }
+            if (changedProps.ContainsKey("colorIndex"))
+            {
+                SetColor((int)changedProps["colorIndex"]);
+            }
         }
     }
 
@@ -209,5 +244,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     {
         playerManager.Die();
     }
+
 
 }
