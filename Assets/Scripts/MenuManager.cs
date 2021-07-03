@@ -10,7 +10,15 @@ public class MenuManager : MonoBehaviour
 
     void Awake()
     {
+        if (Instance)
+        {
+            Destroy(gameObject);
+        }
         Instance = this;
+        for (int i = 0; i < menus.Length; i++)
+        {
+            CloseMenu(menus[i]);
+        }
     }
 
     public void OpenMenu(string menuName)
@@ -21,7 +29,7 @@ public class MenuManager : MonoBehaviour
             {
                 menus[i].Open();
             }
-            else if (menus[i].open)
+            else if (menus[i].gameObject.activeInHierarchy)
             {
                 CloseMenu(menus[i]);
             }
@@ -32,7 +40,7 @@ public class MenuManager : MonoBehaviour
     {
         for (int i = 0; i < menus.Length; i++)
         {
-            if (menus[i].open)
+            if (menus[i].gameObject.activeInHierarchy)
             {
                 CloseMenu(menus[i]);
             }
