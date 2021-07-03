@@ -148,6 +148,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     {
         if(_index == previousItemIndex)
         {
+            Hashtable hash = new Hashtable();
+            hash.Add("itemIndex", itemIndex);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
             return;
         }
 
@@ -207,6 +210,14 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         }
     }
 
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        base.OnPlayerEnteredRoom(newPlayer);
+        Debug.Log("player entered room");
+        SetColorSelf(colorIndex);
+        EquipItem(itemIndex);
+    }
+
     public void SetGroundedState(bool _grounded)
     {
         grounded = _grounded;
@@ -239,6 +250,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
             Die();
         }
     }
+
 
     void Die()
     {
