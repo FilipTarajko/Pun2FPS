@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     {
         if(PV.IsMine)
         {
-            transform.position += new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), Random.Range(-2f, 2f));
+            transform.position += new Vector3(Random.Range(-0.2f, 0.2f), 0, Random.Range(-0.2f, 0.2f));
             EquipItem(0);
         }
         else
@@ -64,30 +64,39 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         HandleLooking();
         HandleMoving();
         HandleJumping();
+        HandleItems();
 
-        for (int i=0; i<items.Length; i++)
+        if(transform.position.y < -10f)
         {
-            if(Input.GetKeyDown((i+1).ToString()))
+            Die();
+        }
+    }
+
+    void HandleItems()
+    {
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (Input.GetKeyDown((i + 1).ToString()))
             {
                 EquipItem(i);
                 break;
             }
         }
 
-        if(Input.GetAxisRaw("Mouse ScrollWheel")>0f)
+        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0f)
         {
-            if(itemIndex >= items.Length - 1)
+            if (itemIndex >= items.Length - 1)
             {
                 EquipItem(0);
             }
             else
             {
                 EquipItem(itemIndex + 1);
-            }    
+            }
         }
-        else if(Input.GetAxisRaw("Mouse ScrollWheel")<0f)
+        else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0f)
         {
-            if(itemIndex<=0)
+            if (itemIndex <= 0)
             {
                 EquipItem(items.Length - 1);
             }
@@ -97,7 +106,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
             }
         }
 
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             items[itemIndex].Use();
         }
