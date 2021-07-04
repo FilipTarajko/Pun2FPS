@@ -13,14 +13,6 @@ public class SingleShotGun : Gun
         PV = GetComponent<PhotonView>();
     }
 
-    public override void Use()
-    {
-        if (drawingTimeLeft <= 0 && sinceLastShot >= ((GunInfo)itemInfo).timePerShot)
-        {
-            sinceLastShot = 0f;
-            Shoot();
-        }
-    }
 
     private void Update()
     {
@@ -44,7 +36,7 @@ public class SingleShotGun : Gun
         Debug.Log("Drew " + itemInfo.name);
     }
 
-    void Shoot()
+    public override void Shoot()
     {
         goingAwayTimeLeft = goingAwayTime;
         Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));

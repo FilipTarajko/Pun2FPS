@@ -15,3 +15,4 @@ MonoBehaviour:
   itemName: Rifle
   damage: 70
   timePerShot: 0.11
+  ammo: 30

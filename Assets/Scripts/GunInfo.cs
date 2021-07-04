@@ -8,4 +8,5 @@ public class GunInfo : ItemInfo
 {
     public float damage;
     public float timePerShot;
+    public int ammo;
 }

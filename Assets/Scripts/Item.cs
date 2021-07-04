@@ -25,7 +25,7 @@ public abstract class Item : MonoBehaviour
     public abstract void Use();
     public abstract void Draw();
 
-    private void Start()
+    protected void Start()
     {
         if(itemInfo.name != "Rifle")
         {
@@ -34,7 +34,6 @@ public abstract class Item : MonoBehaviour
             initialRotation = itemGameObject.transform.localRotation;
             animatedRotation = initialRotation * Quaternion.Euler(animatedRotationDifference);
             Debug.Log("Saved initial pos+rot " + itemInfo.name);
-            //Draw();
         }
     }
 
