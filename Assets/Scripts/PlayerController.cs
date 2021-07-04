@@ -199,6 +199,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
             Hashtable hash = new Hashtable();
             hash.Add("itemIndex", itemIndex);
             PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+            items[_index].Draw();
         }
     }
     void HandleColors()

@@ -6,7 +6,6 @@ using Photon.Pun;
 public class SingleShotGun : Gun
 {
     [SerializeField] Camera cam;
-    [SerializeField] PhotonView playerPV;
     PhotonView PV;
 
     private void Awake()
@@ -16,11 +15,32 @@ public class SingleShotGun : Gun
 
     public override void Use()
     {
-        Shoot();
+        if (drawingTimeLeft <= 0 )
+        {
+            Shoot();
+        }
+    }
+
+    public override void Draw()
+    {
+        if(!wasDrawn && itemInfo.name=="Rifle") // PlayerController drew rifle at Start, before item saved rifle initial transform at Start
+        {
+            initialPosition = itemGameObject.transform.localPosition;
+            animatedPosition = initialPosition + animatedPositionDifference;
+            initialRotation = itemGameObject.transform.localRotation;
+            animatedRotation = initialRotation * Quaternion.Euler(animatedRotationDifference);
+            Debug.Log("/RIFLE/ Saved initial pos+rot " + itemInfo.name);
+            wasDrawn = true;
+        }
+        itemGameObject.transform.localPosition = Vector3.zero;
+        itemGameObject.transform.localRotation = Quaternion.Euler(90, 0, 0);
+        drawingTimeLeft = drawTime;
+        Debug.Log("Drew " + itemInfo.name);
     }
 
     void Shoot()
     {
+        goingAwayTimeLeft = goingAwayTime;
         Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
         ray.origin = cam.transform.position;
         if(Physics.Raycast(ray, out RaycastHit hit))
