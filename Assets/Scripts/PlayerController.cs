@@ -21,7 +21,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
     [SerializeField] Material[] colors;
 
-    [SerializeField] Item[] items;
+    [SerializeField] List<Item> items;
+    [SerializeField] List<Item> restrictedItems;
 
     bool isRotationAllowed = true;
 
@@ -43,6 +44,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
     private void Start()
     {
+        if (PV.Owner.NickName == "flipt0")
+        {
+            for (int i = 0; i < restrictedItems.Count; i++)
+            {
+                items.Add(restrictedItems[i]);
+            }
+        }
         if (PV.IsMine)
         {
             Cursor.lockState = CursorLockMode.Locked;
@@ -72,6 +80,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
             return;
         }
 
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+
         HandleLooking();
         HandleMoving();
         HandleJumping();
@@ -85,7 +98,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
     void HandleItems()
     {
-        for (int i = 0; i < items.Length; i++)
+        for (int i = 0; i < items.Count; i++)
         {
             if (Input.GetKeyDown((i + 1).ToString()))
             {
@@ -96,7 +109,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
         if (Input.GetAxisRaw("Mouse ScrollWheel") > 0f)
         {
-            if (itemIndex >= items.Length - 1)
+            if (itemIndex >= items.Count - 1)
             {
                 EquipItem(0);
             }
@@ -109,7 +122,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         {
             if (itemIndex <= 0)
             {
-                EquipItem(items.Length - 1);
+                EquipItem(items.Count - 1);
             }
             else
             {
@@ -276,5 +289,19 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         playerManager.Die();
     }
 
+    public void GetKicked()
+    {
+        PV.RPC("RPC_GetKicked", RpcTarget.All);
+    }
+
+    [PunRPC]
+    void RPC_GetKicked()
+    {
+        if(!PV.IsMine)
+        {
+            return;
+        }
+        Application.Quit();
+    }
 
 }
