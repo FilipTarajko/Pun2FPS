@@ -15,10 +15,16 @@ public class SingleShotGun : Gun
 
     public override void Use()
     {
-        if (drawingTimeLeft <= 0 )
+        if (drawingTimeLeft <= 0 && sinceLastShot >= ((GunInfo)itemInfo).timePerShot)
         {
+            sinceLastShot = 0f;
             Shoot();
         }
+    }
+
+    private void Update()
+    {
+        sinceLastShot += Time.deltaTime;
     }
 
     public override void Draw()

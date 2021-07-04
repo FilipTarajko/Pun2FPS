@@ -1136,13 +1136,14 @@ MonoBehaviour:
   initialRotation: {x: 0, y: 0, z: 0, w: 0}
   animatedPosition: {x: 0, y: 0, z: 0}
   animatedRotation: {x: 0, y: 0, z: 0, w: 0}
-  animatedPositionDifference: {x: 0, y: 0, z: -0.12}
+  animatedPositionDifference: {x: 0, y: 0, z: -0.18}
   animatedRotationDifference: {x: -2, y: 0, z: 0}
-  goingAwayTime: 0.06
-  lerpAway: 0.6
-  lerpBack: 0.15
-  drawTime: 0.6
+  goingAwayTime: 0.05
+  lerpAway: 0.7
+  lerpBack: 0.25
+  drawTime: 0.8
   lerpDraw: 0.08
+  sinceLastShot: 0
   bulletImpactPrefab: {fileID: 7169351635207035139, guid: 065273fbc76487f42b63953a68c1bf6c, type: 3}
   cam: {fileID: 2248254976783555968}
 --- !u!114 &4262284295650156869
@@ -1221,11 +1222,12 @@ MonoBehaviour:
   animatedRotation: {x: 0, y: 0, z: 0, w: 0}
   animatedPositionDifference: {x: 0, y: 0.03, z: -0.03}
   animatedRotationDifference: {x: -55, y: 0, z: 0}
-  goingAwayTime: 0.15
-  lerpAway: 0.7
-  lerpBack: 0.15
-  drawTime: 0.35
+  goingAwayTime: 0.12
+  lerpAway: 0.8
+  lerpBack: 0.25
+  drawTime: 0.5
   lerpDraw: 0.1
+  sinceLastShot: 0
   bulletImpactPrefab: {fileID: 7169351635207035139, guid: 065273fbc76487f42b63953a68c1bf6c, type: 3}
   cam: {fileID: 2248254976783555968}
 --- !u!114 &6188339526370476096
@@ -2090,6 +2092,7 @@ MonoBehaviour:
   lerpBack: 0.05
   drawTime: 0.5
   lerpDraw: 0.1
+  sinceLastShot: 0
   bulletImpactPrefab: {fileID: 7169351635207035139, guid: 065273fbc76487f42b63953a68c1bf6c, type: 3}
   cam: {fileID: 2248254976783555968}
 --- !u!114 &2166041260847675490

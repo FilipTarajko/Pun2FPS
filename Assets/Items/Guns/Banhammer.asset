@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: PlayerKicker
   damage: 666
+  timePerShot: 1.5
